@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dadi Sasank Kumar — Security Researcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #18181f;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #e8e8f0;
+    --muted: #7a7a90;
+    --accent: #00ffcc;
+    --accent2: #ff2d78;
+    --accent3: #3d5afe;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 3rem;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 3rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,204,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,204,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+  }
+
+  .hero-glow {
+    position: absolute;
+    top: 20%;
+    left: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0,255,204,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-glow2 {
+    position: absolute;
+    bottom: 10%;
+    right: -5%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(61,90,254,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-label {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .hero-label::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-name {
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+  .hero-name .line1 { display: block; color: var(--text); }
+  .hero-name .line2 {
+    display: block;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.25);
+  }
+
+  .hero-role {
+    margin-top: 2rem;
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    color: var(--muted);
+    max-width: 540px;
+    line-height: 2;
+  }
+  .hero-role span { color: var(--accent); }
+  .hero-role .tag {
+    display: inline-block;
+    border: 1px solid var(--border2);
+    border-radius: 2px;
+    padding: 0.1em 0.5em;
+    margin: 0.15em;
+    font-size: 0.75rem;
+    color: var(--muted);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .hero-role .tag:hover { border-color: var(--accent); color: var(--accent); }
+
+  .hero-cta {
+    margin-top: 3rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.75rem;
+    background: var(--accent);
+    color: #0a0a0f;
+    text-decoration: none;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.75rem;
+    border: 1px solid var(--border2);
+    color: var(--text);
+    text-decoration: none;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    transition: border-color 0.2s, color 0.2s, transform 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+
+  /* SECTIONS */
+  section {
+    padding: 7rem 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    max-width: 200px;
+  }
+
+  .section-title {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 3rem;
+    line-height: 1.1;
+  }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  .about-text p {
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+    font-size: 1.05rem;
+    line-height: 1.8;
+  }
+  .about-text p strong { color: var(--text); font-weight: 600; }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .stat-box {
+    background: var(--bg2);
+    padding: 1.75rem;
+    transition: background 0.2s;
+  }
+  .stat-box:hover { background: var(--bg3); }
+  .stat-num {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+    font-family: var(--mono);
+  }
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* EXPERIENCE */
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 3.5rem;
+    padding-left: 2rem;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2rem;
+    top: 0.55rem;
+    width: 7px;
+    height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(0,255,204,0.12);
+  }
+  .timeline-item.current::before {
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(0,255,204,0.12); }
+    50% { box-shadow: 0 0 0 8px rgba(0,255,204,0.0); }
+  }
+  .timeline-date {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+  }
+  .timeline-role {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+  }
+  .timeline-org {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-bottom: 0.8rem;
+  }
+  .timeline-desc {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+  .timeline-tags {
+    margin-top: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .tl-tag {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    padding: 0.2em 0.6em;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* PROJECTS */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .project-card {
+    background: var(--bg2);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: background 0.2s;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+  }
+  .project-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+  }
+  .project-card:hover { background: var(--bg3); }
+  .project-card:hover::after { transform: scaleX(1); }
+
+  .project-num {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    opacity: 0.7;
+  }
+  .project-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .project-desc {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.7;
+    flex: 1;
+  }
+  .project-lang {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  .lang-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .lang-dot.py { background: #3572A5; }
+  .lang-dot.cpp { background: #f34b7d; }
+  .lang-dot.nb { background: #DA5B0B; }
+
+  /* SKILLS */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+  .skill-group {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    border-radius: 2px;
+  }
+  .skill-group-name {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .skill-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    list-style: none;
+  }
+  .skill-list li {
+    font-size: 0.88rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .skill-list li::before {
+    content: '›';
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* CONTACT */
+  .contact-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  .contact-lead {
+    font-size: 1.05rem;
+    color: var(--muted);
+    line-height: 1.9;
+    margin-bottom: 2rem;
+  }
+  .contact-lead strong { color: var(--text); }
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    text-decoration: none;
+    border-radius: 2px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .contact-link:hover { border-color: var(--accent); background: var(--bg3); }
+  .contact-link-icon {
+    font-size: 1rem;
+    color: var(--accent);
+    font-family: var(--mono);
+    width: 2rem;
+    text-align: center;
+  }
+  .contact-link-text {
+    display: flex;
+    flex-direction: column;
+  }
+  .contact-link-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.1rem;
+  }
+  .contact-link-val {
+    font-size: 0.88rem;
+    color: var(--text);
+  }
+
+  /* TERMINAL BLOCK */
+  .terminal {
+    background: #0d0d14;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .terminal-bar {
+    background: #1a1a24;
+    padding: 0.6rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .terminal-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .terminal-dot.r { background: #ff5f57; }
+  .terminal-dot.y { background: #febc2e; }
+  .terminal-dot.g { background: #28c840; }
+  .terminal-body {
+    padding: 1.5rem;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    line-height: 2;
+    color: var(--muted);
+  }
+  .t-prompt { color: var(--accent); }
+  .t-cmd { color: var(--text); }
+  .t-comment { color: #444; }
+  .t-key { color: #ff2d78; }
+  .t-val { color: #00ffcc; }
+  .t-str { color: #ffd700; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  /* ANIMATIONS */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    #hero { padding: 7rem 1.5rem 3rem; }
+    section { padding: 4rem 1.5rem; }
+    .about-grid, .contact-wrap { grid-template-columns: 1fr; gap: 2rem; }
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">// sesiii</div>
+  <ul class="nav-links">
+    <li><a href="#about">about</a></li>
+    <li><a href="#experience">experience</a></li>
+    <li><a href="#projects">projects</a></li>
+    <li><a href="#skills">skills</a></li>
+    <li><a href="#contact">contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero" style="max-width:none; padding-left:max(3rem,8vw); padding-right:max(3rem,8vw);">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <div class="hero-label">Security Researcher &amp; Systems Engineer</div>
+
+  <h1 class="hero-name">
+    <span class="line1">Dadi Sasank</span>
+    <span class="line2">Kumar.</span>
+  </h1>
+
+  <div class="hero-role">
+    <span>Incoming @ </span><span>Microsoft Windows Defender</span> · IIT Kharagpur CS '25<br>
+    <span class="tag">Agentic AI</span>
+    <span class="tag">Systems Security</span>
+    <span class="tag">Multi-Agent Systems</span>
+    <span class="tag">LLM Orchestration</span>
+    <span class="tag">Network Protocols</span>
+    <span class="tag">Windows Internals</span>
+  </div>
+
+  <div class="hero-cta">
+    <a href="#projects" class="btn-primary">View Projects →</a>
+    <a href="https://linkedin.com/in/sesidadi" target="_blank" class="btn-ghost">LinkedIn ↗</a>
+    <a href="https://github.com/sesiii" target="_blank" class="btn-ghost">GitHub ↗</a>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">01 — About</div>
+  <h2 class="section-title">Building secure,<br>intelligent systems.</h2>
+  <div class="about-grid fade-in">
+    <div class="about-text">
+      <p>
+        I'm a final-year CS undergrad at <strong>IIT Kharagpur</strong>, focused on the intersection of
+        <strong>systems security</strong> and <strong>agentic AI</strong>. My work spans identifying
+        novel threat surfaces in low-level systems, designing multi-agent orchestration pipelines,
+        and studying network protocols under real-world conditions.
+      </p>
+      <p>
+        This summer I join <strong>Microsoft's Windows Defender / Dexperts team</strong> in Hyderabad
+        as a Security Researcher — working on identifying and mitigating novel threats in low-level
+        Windows internals and agentic threat surfaces.
+      </p>
+      <p>
+        I like building things that operate at the boundary of trust: secure communication infrastructure,
+        heterogeneous LLM orchestrators, and deep learning pipelines for medical signal classification.
+      </p>
+    </div>
+
+    <div class="about-stats">
+      <div class="stat-box">
+        <div class="stat-num">29</div>
+        <div class="stat-label">Repositories</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Research Areas</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">2</div>
+        <div class="stat-label">Internships</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">IIT</div>
+        <div class="stat-label">Kharagpur · CS</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" style="border-top: 1px solid var(--border);">
+  <div class="section-label">02 — Experience</div>
+  <h2 class="section-title">Where I've worked.</h2>
+  <div class="timeline fade-in">
+
+    <div class="timeline-item current">
+      <div class="timeline-date">2025 → Present</div>
+      <div class="timeline-role">Security Researcher</div>
+      <div class="timeline-org">Microsoft · Windows Defender / Dexperts Team · Hyderabad</div>
+      <p class="timeline-desc">
+        Identifying and mitigating novel threats in low-level Windows systems. Focus on agentic
+        threat surfaces and Windows internals — building detection pipelines and analyzing
+        emerging attack vectors in agentic AI contexts.
+      </p>
+      <div class="timeline-tags">
+        <span class="tl-tag">Windows Internals</span>
+        <span class="tl-tag">Agentic Security</span>
+        <span class="tl-tag">Threat Analysis</span>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-date">2024</div>
+      <div class="timeline-role">AI Research Intern</div>
+      <div class="timeline-org">Ericsson Research</div>
+      <p class="timeline-desc">
+        Designed and implemented multi-agent system architectures for cloud-deployed LLMs.
+        Built a Dynamic LLM Selection Matrix for intelligent orchestration pipelines,
+        enabling context-aware routing across heterogeneous model backends.
+      </p>
+      <div class="timeline-tags">
+        <span class="tl-tag">Multi-Agent Systems</span>
+        <span class="tl-tag">LLM Orchestration</span>
+        <span class="tl-tag">Cloud AI</span>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-date">2024–2025 · B.Tech Thesis</div>
+      <div class="timeline-role">Deep Learning Research</div>
+      <div class="timeline-org">IIT Kharagpur</div>
+      <p class="timeline-desc">
+        Developed deep learning models for harmful brain activity classification using EEG signals.
+        Combined signal processing techniques with custom neural architectures for real-time
+        medical classification.
+      </p>
+      <div class="timeline-tags">
+        <span class="tl-tag">Deep Learning</span>
+        <span class="tl-tag">Signal Processing</span>
+        <span class="tl-tag">PyTorch</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" style="border-top: 1px solid var(--border);">
+  <div class="section-label">03 — Projects</div>
+  <h2 class="section-title">Things I've built.</h2>
+  <div class="projects-grid fade-in">
+
+    <a class="project-card" href="https://github.com/sesiii/SecureChat" target="_blank">
+      <div class="project-num">01</div>
+      <div class="project-name">SecureChat</div>
+      <div class="project-desc">
+        Distributed chat infrastructure for secure real-time communication across
+        independent server clusters. Built with custom encryption layers and
+        fault-tolerant architecture.
+      </div>
+      <div class="project-lang">
+        <span class="lang-dot py"></span> Python · ★ 2
+      </div>
+    </a>
+
+    <a class="project-card" href="https://github.com/sesiii/Agent-Router" target="_blank">
+      <div class="project-num">02</div>
+      <div class="project-name">Agent-Router</div>
+      <div class="project-desc">
+        Context-aware router for cloud-deployed LLMs and multi-agent systems.
+        Dynamically selects optimal model backends based on query semantics
+        and cost constraints.
+      </div>
+      <div class="project-lang">
+        <span class="lang-dot nb"></span> Jupyter Notebook · ★ 1
+      </div>
+    </a>
+
+    <a class="project-card" href="https://github.com/sesiii/HeteroLLMs" target="_blank">
+      <div class="project-num">03</div>
+      <div class="project-name">HeteroLLMs</div>
+      <div class="project-desc">
+        Heterogeneous multi-agent system with dynamic LLM selection. Orchestrates
+        diverse model families for complementary strengths in reasoning,
+        code generation, and retrieval tasks.
+      </div>
+      <div class="project-lang">
+        <span class="lang-dot py"></span> Python · ★ 1
+      </div>
+    </a>
+
+    <a class="project-card" href="https://github.com/sesiii/Query-Processor-Optimizer" target="_blank">
+      <div class="project-num">04</div>
+      <div class="project-name">Query Processor &amp; Optimizer</div>
+      <div class="project-desc">
+        SQL query processor and optimizer built in C++ with Flex/Bison.
+        Implements query parsing, logical plan generation, and
+        cost-based optimization.
+      </div>
+      <div class="project-lang">
+        <span class="lang-dot cpp"></span> C++ · ★ 1 · 🍴 1
+      </div>
+    </a>
+
+    <a class="project-card" href="https://github.com/sesiii/QUICvsTCP" target="_blank">
+      <div class="project-num">05</div>
+      <div class="project-name">QUIC vs TCP</div>
+      <div class="project-desc">
+        Empirical evaluation of QUIC and TCP/TLS 1.3 performance across
+        heterogeneous network conditions — varying latency, packet loss,
+        and bandwidth constraints.
+      </div>
+      <div class="project-lang">
+        <span class="lang-dot py"></span> Python
+      </div>
+    </a>
+
+    <a class="project-card" href="https://github.com/sesiii/Beamsteering-Radar" target="_blank">
+      <div class="project-num">06</div>
+      <div class="project-name">Beamsteering Radar</div>
+      <div class="project-desc">
+        Deep learning approaches for beamsteering dataset prediction.
+        Signal processing pipelines combined with neural network classifiers
+        for radar beam direction estimation.
+      </div>
+      <div class="project-lang">
+        <span class="lang-dot py"></span> Python
+      </div>
+    </a>
+
+  </div>
+  <div style="margin-top:1.5rem; text-align:right;">
+    <a href="https://github.com/sesiii?tab=repositories" target="_blank" class="btn-ghost" style="display:inline-flex;">All repositories ↗</a>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" style="border-top: 1px solid var(--border);">
+  <div class="section-label">04 — Skills</div>
+  <h2 class="section-title">What I work with.</h2>
+  <div class="skills-grid fade-in">
+
+    <div class="skill-group">
+      <div class="skill-group-name">Security</div>
+      <ul class="skill-list">
+        <li>Systems Security</li>
+        <li>Agentic Threat Analysis</li>
+        <li>Windows Internals</li>
+        <li>Network Protocols</li>
+        <li>Vulnerability Research</li>
+      </ul>
+    </div>
+
+    <div class="skill-group">
+      <div class="skill-group-name">Agentic AI</div>
+      <ul class="skill-list">
+        <li>Multi-Agent Systems</li>
+        <li>LLM Orchestration</li>
+        <li>LangChain / LangGraph</li>
+        <li>Model Context Protocol</li>
+        <li>Dynamic Routing</li>
+      </ul>
+    </div>
+
+    <div class="skill-group">
+      <div class="skill-group-name">Languages</div>
+      <ul class="skill-list">
+        <li>Python</li>
+        <li>C / C++</li>
+        <li>SQL</li>
+        <li>Bash / Shell</li>
+      </ul>
+    </div>
+
+    <div class="skill-group">
+      <div class="skill-group-name">ML / Systems</div>
+      <ul class="skill-list">
+        <li>PyTorch</li>
+        <li>Deep Learning</li>
+        <li>Signal Processing</li>
+        <li>QUIC / TCP / BGP</li>
+        <li>Flex / Bison</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="border-top: 1px solid var(--border);">
+  <div class="section-label">05 — Contact</div>
+  <h2 class="section-title">Let's connect.</h2>
+  <div class="contact-wrap fade-in">
+
+    <div>
+      <p class="contact-lead">
+        I'm always open to conversations about <strong>security research</strong>,
+        <strong>agentic AI system design</strong>, and <strong>multi-agent orchestration</strong>.
+        Whether you want to collaborate, discuss ideas, or just say hi — reach out.
+      </p>
+      <div class="contact-links">
+        <a class="contact-link" href="mailto:sasankkumar.dadi.edu@gmail.com">
+          <div class="contact-link-icon">@</div>
+          <div class="contact-link-text">
+            <span class="contact-link-label">Email</span>
+            <span class="contact-link-val">sasankkumar.dadi.edu@gmail.com</span>
+          </div>
+        </a>
+        <a class="contact-link" href="https://linkedin.com/in/sesidadi" target="_blank">
+          <div class="contact-link-icon">in</div>
+          <div class="contact-link-text">
+            <span class="contact-link-label">LinkedIn</span>
+            <span class="contact-link-val">linkedin.com/in/sesidadi</span>
+          </div>
+        </a>
+        <a class="contact-link" href="https://github.com/sesiii" target="_blank">
+          <div class="contact-link-icon">gh</div>
+          <div class="contact-link-text">
+            <span class="contact-link-label">GitHub</span>
+            <span class="contact-link-val">github.com/sesiii</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="terminal-dot r"></div>
+        <div class="terminal-dot y"></div>
+        <div class="terminal-dot g"></div>
+      </div>
+      <div class="terminal-body">
+        <span class="t-prompt">$ </span><span class="t-cmd">cat profile.json</span><br>
+        {<br>
+        &nbsp;&nbsp;<span class="t-key">"name"</span>: <span class="t-str">"Dadi Sasank Kumar"</span>,<br>
+        &nbsp;&nbsp;<span class="t-key">"role"</span>: <span class="t-str">"Security Researcher"</span>,<br>
+        &nbsp;&nbsp;<span class="t-key">"org"</span>: <span class="t-str">"Microsoft · WD / Dexperts"</span>,<br>
+        &nbsp;&nbsp;<span class="t-key">"edu"</span>: <span class="t-str">"IIT Kharagpur · CS"</span>,<br>
+        &nbsp;&nbsp;<span class="t-key">"focus"</span>: [<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"agentic security"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"multi-agent systems"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"windows internals"</span><br>
+        &nbsp;&nbsp;],<br>
+        &nbsp;&nbsp;<span class="t-key">"status"</span>: <span class="t-val">"open to collaboration"</span><br>
+        }<br><br>
+        <span class="t-prompt">$ </span><span class="t-cmd">ping sasank --connect</span><br>
+        <span class="t-val">PONG · 0% packet loss · ready ✓</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <span>// Dadi Sasank Kumar · 2025</span>
+  <span><a href="https://github.com/sesiii" target="_blank">github.com/sesiii</a></span>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+</script>
+
+</body>
+</html>
